@@ -4,11 +4,11 @@ TARGET=${TARGET:-"centos"}
 
 if [ $TARGET == "rhel" ]; then
   export DOCKERFILE="Dockerfile.rhel"
-  export DOCKER_REGISTRY=${DOCKER_REGISTRY:-"prod.registry.devshift.net"}
+  export DOCKER_REGISTRY=${DOCKER_REGISTRY:-"push.registry.devshift.net/osio-prod"}
   export DOCKER_HUB_NAMESPACE=${DOCKER_REGISTRY}/rhchestage
 else
   export DOCKERFILE="Dockerfile"
-  export DOCKER_REGISTRY="docker.io"
+  export DOCKER_REGISTRY="push.registry.devshift.net"
   export RH_CHE_DOCKER_HUB_NAMESPACE=${DOCKER_REGISTRY}/rhchestage
   export DOCKER_HUB_NAMESPACE=${DOCKER_HUB_NAMESPACE:-${RH_CHE_DOCKER_HUB_NAMESPACE}}
 fi

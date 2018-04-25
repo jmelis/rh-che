@@ -48,20 +48,15 @@ else
   exit 1
 fi
 
-if [ $TARGET == "rhel" ]; then
-  PROD_IMAGE_DEVSHIFT="${DOCKER_REGISTRY}/che/rh-che-server:${TAG_SHORT_COMMIT_HASH}"
-  PROD_IMAGE_DEVSHIFT_LATEST="${DOCKER_REGISTRY}/che/rh-che-server:latest"
-else
-  PROD_IMAGE_DEVSHIFT="push.registry.devshift.net/che/rh-che-server:${TAG_SHORT_COMMIT_HASH}"
-  PROD_IMAGE_DEVSHIFT_LATEST="push.registry.devshift.net/che/rh-che-server:latest"
-fi
-
 if [ -n "${DEVSHIFT_USERNAME}" -a -n "${DEVSHIFT_PASSWORD}" ]; then
-  docker login -u "${DEVSHIFT_USERNAME}" -p "${DEVSHIFT_PASSWORD}" push.registry.devshift.net
+  docker login -u "${DEVSHIFT_USERNAME}" -p "${DEVSHIFT_PASSWORD}" ${DOCKER_REGISTRY}
 else
   echo "ERROR: Can not push to registry.devshift.net: credentials are not set. Aborting"
   exit 1
 fi
+
+PROD_IMAGE_DEVSHIFT="${DOCKER_REGISTRY}/che/rh-che-server:${TAG_SHORT_COMMIT_HASH}"
+PROD_IMAGE_DEVSHIFT_LATEST="${DOCKER_REGISTRY}/che/rh-che-server:latest"
 
 echo "CHE VALIDATION: Pushing image ${PROD_IMAGE_DEVSHIFT} and ${PROD_IMAGE_DEVSHIFT_LATEST} to devshift registry"
 

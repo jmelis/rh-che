@@ -45,7 +45,14 @@ do
 
   echo "Copying assembly ${distribution} --> ${LOCAL_ASSEMBLY_DIR}"
   cp -r "${distribution}" "${LOCAL_ASSEMBLY_DIR}"
-  
+
+  if [ -n "${DEVSHIFT_USERNAME}" -a -n "${DEVSHIFT_PASSWORD}" ]; then
+    docker login -u "${DEVSHIFT_USERNAME}" -p "${DEVSHIFT_PASSWORD}" ${DOCKER_REGISTRY}
+  else
+    echo "ERROR: Can not push to registry.devshift.net: credentials are not set. Aborting"
+    exit 1
+  fi
+
   docker build -t ${DOCKER_IMAGE}:${TAG} -f $DIR/${DOCKERFILE} .
   if [ $? -ne 0 ]; then
     echo 'Docker Build Failed'
@@ -58,10 +65,6 @@ do
   dockerTags="${dockerTags} ${DOCKER_IMAGE}:${NIGHTLY} ${DOCKER_IMAGE}:${TAG}"
 
   if [ "$DeveloperBuild" != "true" ]; then
-      # no need to login to push rhel image
-      if [ $TARGET != "rhel" ]; then
-          docker login -u ${DOCKER_HUB_USER} -p $DOCKER_HUB_PASSWORD -e noreply@redhat.com
-      fi
       docker push ${DOCKER_IMAGE}:${NIGHTLY}
       docker push ${DOCKER_IMAGE}:${TAG}
   fi
