@@ -2,18 +2,17 @@
 
 TARGET=${TARGET:-"centos"}
 
+export NAMESPACE="rhchestage"
+
 if [ $TARGET == "rhel" ]; then
   export DOCKERFILE="Dockerfile.rhel"
-  export DOCKER_REGISTRY=${DOCKER_REGISTRY:-"push.registry.devshift.net/osio-prod"}
-  export DOCKER_HUB_NAMESPACE=${DOCKER_REGISTRY}/rhchestage
+  export REGISTRY=${DOCKER_REGISTRY:-"push.registry.devshift.net/osio-prod"}
 else
   export DOCKERFILE="Dockerfile"
-  export DOCKER_REGISTRY="push.registry.devshift.net"
-  export RH_CHE_DOCKER_HUB_NAMESPACE=${DOCKER_REGISTRY}/rhchestage
-  export DOCKER_HUB_NAMESPACE=${DOCKER_HUB_NAMESPACE:-${RH_CHE_DOCKER_HUB_NAMESPACE}}
+  export REGISTRY="push.registry.devshift.net"
 fi
 
-export DOCKER_IMAGE="${DOCKER_HUB_NAMESPACE}/rh-che-server"
+export DOCKER_IMAGE="rh-che-server"
 
 export RH_CHE_GIT_REPO=https://github.com/redhat-developer/rh-che
 export RH_CHE_GIT_BRANCH=rh-che6

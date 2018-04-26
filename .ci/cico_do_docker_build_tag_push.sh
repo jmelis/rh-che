@@ -47,26 +47,33 @@ do
   cp -r "${distribution}" "${LOCAL_ASSEMBLY_DIR}"
 
   if [ -n "${DEVSHIFT_USERNAME}" -a -n "${DEVSHIFT_PASSWORD}" ]; then
-    docker login -u "${DEVSHIFT_USERNAME}" -p "${DEVSHIFT_PASSWORD}" ${DOCKER_REGISTRY}
+    docker login -u "${DEVSHIFT_USERNAME}" -p "${DEVSHIFT_PASSWORD}" ${REGISTRY}
   else
     echo "ERROR: Can not push to registry.devshift.net: credentials are not set. Aborting"
     exit 1
   fi
 
-  docker build -t ${DOCKER_IMAGE}:${TAG} -f $DIR/${DOCKERFILE} .
+  docker build -t ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${TAG} -f $DIR/${DOCKERFILE} .
   if [ $? -ne 0 ]; then
     echo 'Docker Build Failed'
     exit 2
   fi
 
   # lets change the tag and push it to the registry
-  docker tag ${DOCKER_IMAGE}:${TAG} ${DOCKER_IMAGE}:${NIGHTLY}
+  docker tag ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${TAG} ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${NIGHTLY}
     
-  dockerTags="${dockerTags} ${DOCKER_IMAGE}:${NIGHTLY} ${DOCKER_IMAGE}:${TAG}"
+  dockerTags="${dockerTags} ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${NIGHTLY} ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${TAG}"
 
   if [ "$DeveloperBuild" != "true" ]; then
-      docker push ${DOCKER_IMAGE}:${NIGHTLY}
-      docker push ${DOCKER_IMAGE}:${TAG}
+      docker push ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${NIGHTLY}
+      docker push ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${TAG}
+  fi
+  #push to docker.io ONLY if not RHEL
+  if [ $TARGET != "rhel" ]; then
+    docker tag ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${TAG} docker.io/${NAMESPACE}/${DOCKER_IMAGE}:latest
+    docker tag ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${TAG} docker.io/${NAMESPACE}/${DOCKER_IMAGE}:$TAG
+    docker push docker.io/${NAMESPACE}/${DOCKER_IMAGE}:latest
+    docker push docker.io/${NAMESPACE}/${DOCKER_IMAGE}:$TAG
   fi
 done
 
