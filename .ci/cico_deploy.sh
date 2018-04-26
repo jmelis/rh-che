@@ -67,24 +67,3 @@ docker push "${PROD_IMAGE_DEVSHIFT}"
 docker push "${PROD_IMAGE_DEVSHIFT_LATEST}"
 
 echo "CHE VALIDATION: Image pushed to devshift registry"
-
-if [ $TARGET != "rhel" ]; then
-    # We need to continue pushing to the Docker Hub until we have setup a webhook for
-    # repository che/che on devshift. The webhook should trigger
-    # https://jenkins.cd.test.fabric8.io/che-version-updater/notify
-    # every time a new version of Che is available
-    PROD_IMAGE_DOCKER_HUB="docker.io/rhche/rh-che-server:${CHE_SERVER_DOCKER_IMAGE_TAG}"
-
-    echo "CHE VALIDATION: Pushing ${PROD_IMAGE_DOCKER_HUB} image Docker Hub"
-
-    if ([ -z "${DOCKER_HUB_USER+x}" ] || [ -z "${DOCKER_HUB_PASSWORD+x}" ]); then
-        echo "ERROR: Cannot push images to Docker Hub: credentials are not set. Aborting"
-        exit 1
-    fi
-
-    docker login -u "${DOCKER_HUB_USER}" -p "${DOCKER_HUB_PASSWORD}"
-    docker tag "${STAGE_IMAGE_TO_PROMOTE}" "${PROD_IMAGE_DOCKER_HUB}"
-    docker push "${PROD_IMAGE_DOCKER_HUB}"
-
-    echo "CHE VALIDATION: Image pushed to Docker Hub"
-fi

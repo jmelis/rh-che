@@ -68,13 +68,6 @@ do
       docker push ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${NIGHTLY}
       docker push ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${TAG}
   fi
-  #push to docker.io ONLY if not RHEL
-  if [ $TARGET != "rhel" ]; then
-    docker tag ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${TAG} docker.io/${NAMESPACE}/${DOCKER_IMAGE}:latest
-    docker tag ${REGISTRY}/${NAMESPACE}/${DOCKER_IMAGE}:${TAG} docker.io/${NAMESPACE}/${DOCKER_IMAGE}:$TAG
-    docker push docker.io/${NAMESPACE}/${DOCKER_IMAGE}:latest
-    docker push docker.io/${NAMESPACE}/${DOCKER_IMAGE}:$TAG
-  fi
 done
 
 if [ "${DOCKER_HOST}" == "" ]; then
