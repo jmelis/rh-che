@@ -4,6 +4,8 @@
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/epl-v10.html
 
+# RHEL parent dockerfile: https://github.com/rhdt/EL-Dockerfiles/blob/master/base/rh-che/Dockerfile
+
 FROM prod.registry.devshift.net/osio-prod/base/rh-che:latest
 
 ENV LANG="C.UTF-8" \
